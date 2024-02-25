@@ -1,8 +1,17 @@
 package com.comsystem.homework.robot;
 
 
+import com.comsystem.homework.model.RobotAction;
 import com.comsystem.homework.model.RobotPlan;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+// I am so sorry for the changing of the skeleton, however I have to make the code work
+// (we can create a new Instance of RobotOperations in the RobotRestController class and to not use the
+// @Service annotation however I don't think it is good practice overall)
 public class RobotOperations {
 
     /**
@@ -15,8 +24,21 @@ public class RobotOperations {
      * @see RobotPlan
      */
     public RobotPlan excavateStonesForDays(int days) {
-        // TODO
-        return null;
+        int stones = 0;
+        int robots = 1;
+        List<RobotAction> actions = new ArrayList<>();
+
+        for (int day = 1; day <= days; day++) {
+            if (robots <= days / 2) {
+                actions.add(RobotAction.CLONE);
+                robots++;
+            } else {
+                actions.add(RobotAction.DIG);
+                stones += robots;
+            }
+        }
+
+        return new RobotPlan(days, stones, actions);
     }
 
     /**
@@ -30,8 +52,22 @@ public class RobotOperations {
      * @see RobotPlan
      */
     public RobotPlan daysRequiredToCollectStones(int numberOfStones) {
-        // TODO
-        return null;
-    }
+        int days = 0;
+        int collectedStones = 0;
+        int robots = 1;
+        List<RobotAction> actions = new ArrayList<>();
 
+        while (collectedStones < numberOfStones) {
+            if (robots < Math.sqrt(numberOfStones - collectedStones)) {
+                actions.add(RobotAction.CLONE);
+                robots++;
+            } else {
+                actions.add(RobotAction.DIG);
+                collectedStones += robots;
+            }
+            days++;
+        }
+
+        return new RobotPlan(days, numberOfStones, actions);
+    }
 }
